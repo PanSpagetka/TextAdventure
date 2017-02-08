@@ -1,0 +1,53 @@
+---
+root:
+  type: room
+  name: kitchen
+  description: Kitchen, table with chair in the middle. There is also entrance to other living room
+  contains:
+    - name: table
+      type: item
+      description: table with dinner and fork
+      movable: false
+      contains:
+        - name: dinner
+          type: item
+          description: Mashed potatoes. Hmmm yummy.
+          eatable: true
+          on_eat: Something got stuck between your teeth...aaand it's key!
+          contains:
+            - name: key
+              type: item
+              description: Key. Key to what? My heart? Probably not...
+        - name: fork
+          type: item
+          description: Silver fork
+    - name: chair
+      type: item
+      description: Just wooden chair, bit old
+      contains:
+        - name: paper
+          type: item
+          description: Urguath a valeash
+    - name: living room
+      type: room
+      description: this living room looks empty
+    - name: door
+      type: item
+      description: This door are closed. Probably leds to somewhere
+      on_open: This door leads from kitchen to bedroom
+      movable: false
+      enterable: true
+      openable: true
+      open: false
+      locked: true
+      leadsto:
+        - bedroom
+        - kitchen
+      contains:
+      - name: bedroom
+        type: room
+        description: Bedroom, in the middle of room is bedroom
+        contains:
+        - name: bed
+          type: item
+          description: Bed, here it is

@@ -1,24 +1,21 @@
-class Item
-  TYPES = [:potion, :sword]
+class Item < Node
 
-  attr_accessor :type
-
-  def initialize
-    @type = TYPES.sample
+  def initialize(parent, options = {})
+    options['type'] = 'Item'
+    options['movable'] = true if options['movable'].nil?
+    options['enterable'] = false if options['enterable'].nil?
+    options['open'] = false if options['enterable'].nil?
+    options['openable'] = false if options['enterable'].nil?
+    options['locked'] = false if options['enterable'].nil?
+    options['eatable'] = false if options['enterable'].nil?
+    super
   end
 
-  def interact(player)
-    case @type
-    when :potion
-      puts "You pick up #{self}."
-      player.heal(10)
-    when :sword
-      puts "You pick up #{self}."
-      player.attack_power += 1
+  def leads
+    rooms = []
+    self.leadsto.each do |name|
+      rooms.push(findNodeWithName(name, self.parent))
     end
-  end
-
-  def to_s
-    "a shiny awesome #{@type.to_s}"
+    rooms
   end
 end

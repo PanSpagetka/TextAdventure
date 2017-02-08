@@ -1,0 +1,19 @@
+---
+root:
+  type: room
+  name: kitchen
+  description: mighty kitchen, where it all begins
+  contains:
+    - name: table
+      type: item
+      description: table with dinner
+      contains:
+        - name: dinner
+          type: item
+          description: Mashed potatoes
+    - name: chair
+      type: item
+      description: Just wooden chair, bit old
+    - name: living room
+      type: room
+      description: this living room looks empty

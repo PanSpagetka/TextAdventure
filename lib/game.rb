@@ -1,71 +1,71 @@
 class Game
-  require 'player'
-  require 'pry'
 
-  GAME_ACTIONS = ['end']
-  def initialize
-    @player = Player.new
+  COMMANDS = ['-end', '-h', '-pi', '-draw']
+
+  def initialize(world, player)
+    @player = player
+    @world = world
+    player.moveNode(world.root)
   end
 
   def start
-    welcome
-    while @player.alive?
-      input = prompt('What you gonna do?')
-      loop do
-        process_player_input(input)
-        break if @player.error_message.empty?
-        input = prompt(@player.error_message)
+    text = 'You are in kitchen. You know nothing. Just like John Snow.'
+    begin
+      while @player.alive?
+        begin
+          #puts @world.activeNode.description
+          input = prompt(text)
+          text = ''
+          text = processInput(input)
+        rescue RuntimeError => e
+          puts e.message
+        end
       end
-
-      print_status
+    rescue SystemExit => e
+      puts 'GAME OVER'
     end
-    puts "Oh, you died. That's bad..."
   end
 
+private
   def prompt(text = '')
     print "#{text}\n>"
     gets.chomp
   end
 
-  private
-
-  def print_status
-    puts "You are at map coordinates [#{@player.x}, #{@player.y}]"
-  end
-
-  def process_player_input(input)
+  def processInput(input)
+    return if input.empty?
     action, *params = input.downcase.split(' ')
-    #binding.pry
-    if GAME_ACTIONS.include?(action)
-      case action
-      when 'end'
-        @player.suicide
-      end
+    case
+    when action.start_with?('-')
+      processGameCommand(action, params)
+    when @player.actions.include?(action)
+      @player.handle(action.to_sym, *params)
     else
-      @player.send(action, *params)
+      return 'Uknown command. Type help for help...or type -end to quit this GAME.'
     end
   end
 
-  def ask_question(text)
-    puts text
-    prompt
+  def processGameCommand(cmd, params)
+    case cmd
+    when '-h'
+      printHelp
+    when '-pi'
+      printInteractions
+    when '-draw'
+      drawGraph(@world.root)
+    when '-end'
+      raise SystemExit.new 'End game command'
+    end
+
   end
 
-  def evaluate_ansver(ansver)
-    if ansver == 'n' || ansver == 'no'
-      false
-    else
-      true
-    end
+  def printHelp
+    print "These are availiable game commands #{COMMANDS}"
   end
 
-  def welcome
-    ansver = ask_question("Hey, are you alive?")
-    if evaluate_ansver(ansver)
-      prompt("Fine, lets get started!")
-    else
-      puts 'OK'
-      @player.suicide
-    end
+  def printInteractions
+    puts "You are in #{@player.parent.name}."
+    puts "Items in room #{@player.parent.children.collect{ |i| i.name}}."
+    puts "Your items #{@player.children.collect{ |c| puts c.name}}"
   end
 end

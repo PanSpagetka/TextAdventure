@@ -2,48 +2,71 @@
 require "ostruct"
 
 class Node < OpenStruct
-  DEFAULTS = {
-    :root => { :open => true },
-    :room => { :open => true },
-    :item => { :open => false },
-    :player => { :open => true }
-  }
 
-  def initialize(parent, tag, defaults={}, &block)
+  def initialize(parent, options = {}, &block)
     super()
-    defaults.each {|k,v| send("#{k}=", v) }
+    options['contains'] ||= {}
+    options.each {|k,v| send("#{k}=", v) unless k == 'contains' }
 
     self.parent = parent
     self.parent.children << self unless parent.nil?
-    self.tag = tag
     self.children = []
-
-    instance_eval(&block) unless block.nil?
+    options['contains'].each do |node|
+      klass = Object::const_get(node['type'].capitalize)
+      klass.new(self, node)
+    end
   end
 
-  def room(tag, &block)
-    Node.new(self, tag, DEFAULTS[:room], &block)
+  def moveNode(to)
+    return false unless self.movable
+    return false if self.parent.nil? && !self.parent&.children.nil?
+    self.parent.children -= [self] unless self.parent&.children.nil?
+    self.parent = to
+    to.children.push self
+    true
   end
 
-  def item(tag, name, *words, &block)
-    i = Node.new(self, tag, DEFAULTS[:item])
-    i.name = name
-    i.words = words
-    i.instance_eval(&block) if block_given?
+  def findNodeWithName(name, start)
+    return start if start.name == name
+    start.children.each do |c|
+      node = findNodeWithName(name, c)
+      return node unless node.nil?
+      node
+    end
+    node
   end
 
-  def player(&block)
-    Node.new(self, :player, DEFAULTS[:player], &block)
+  def findItemInRoom(item, room)
+    return room if room.name == item
+    return room.parent if room.parent&.name == item
+    room.children.each do |c|
+      node = findItemInRoom(item, c) if c.type == 'Item'
+      return node unless node.nil?
+      node
+    end
+    node
   end
 
-  def self.root(&block)
-    Node.new(nil, :root, &block)
+  def findEnterableNodes
+    rooms = []
+    rooms += getLeadingNodes(self.parent) if self.parent&.enterable
+    self.children.each do |c|
+      if c.enterable
+        rooms += getLeadingNodes(c)
+      end
+    end
+    rooms
   end
 
-  def  to_s(indent = 0)
-    spaces = '  ' * indent
-    puts "#{spaces}#{self.tag}"
-    indent += 2
-    self.children.each{|c| c.to_s(indent)}
+  def getLeadingNodes(node)
+    if node.type == 'Room'
+      [node]
+    elsif node.type == 'Item'
+      if node.open
+        node.leads
+      else
+        []
+      end
+    end
   end
 end

@@ -1,0 +1,16 @@
+digraph 
+  {
+    "kitchen" -> "table";
+    "table" -> "dinner";
+    "dinner" -> "key";
+    "table" -> "fork";
+    "kitchen" -> "chair";
+    "chair" -> "paper";
+    "kitchen" -> "living room";
+    "kitchen" -> "door";
+    "door" -> "bedroom";
+    "bedroom" -> "bed";
+    "bed" -> "doll";
+    "doll" -> "knife";
+    "kitchen" -> "Pepa";
+  }

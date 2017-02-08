@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 gem 'pry'
-
+gem 'graph'
+gem 'require_all'
+gem 'rspec'
