@@ -23,6 +23,7 @@ class Player < Node
       i = findNodeWithName(item, parent)
       return "You can't find #{item}." if i.nil?
       ret = i.moveNode(self)
+      i.instance_eval(&i.on_take) if i.on_take
     end
 
     return "You have succesfully taken #{item}." if ret
@@ -37,7 +38,9 @@ class Player < Node
       return "There is no #{where} to put it." if target.nil?
 
       ret = item.moveNode(target)
-      return  "You have succesfully put #{what} #{proposition.join(' ')} #{where}." if ret
+      target.instance_exec(item, &target.on_put) if target.on_put
+
+      return  "You have succesfully put #{what}#{proposition.join(' ')} #{where}." if ret
       "You cant put #{what} #{proposition.join(' ')} #{where}."
     end
   end
@@ -46,9 +49,10 @@ class Player < Node
   def look(*proposition, target)
     return 'Look at what?' if target.nil?
     target = parent.name if target == 'around'
-    item = findItemInRoom(target, parent)
-    return "There is #{item.name}. #{item.description}." if item
-    "You cant find such item like #{item.name}."
+    item = findItemInRoom(target, self)
+    item = findItemInRoom(target, parent) if item.nil?
+    return "#{item.description}." if item
+    "You cant find such item like #{target}."
   end
 
   def go(*where)
@@ -61,7 +65,7 @@ class Player < Node
         if room.name == name
           return "You are already in #{name}." if name == parent&.name
           enter(room)
-          return "You have entered #{name}."
+          return "You have entered #{name}.\n#{room.description}"
         end
       end
       where.shift
@@ -72,7 +76,8 @@ class Player < Node
 
   def open(*proposition, target)
     return 'What you want to open?' if target.empty?
-    item = findItemInRoom(target, parent)
+    item = findItemInRoom(target, self)
+    item = findItemInRoom(target, parent) if item.nil?
     if item
       if item.locked == true
         "#{target} is locked."
@@ -90,7 +95,8 @@ class Player < Node
 
   def close(*proposition, target)
     return 'What you want to close?' if target.empty?
-    item = findItemInRoom(target, parent)
+    item = findItemInRoom(target, self)
+    item = findItemInRoom(target, parent) if item.nil?
     if item
       if item.openable
         item.open = false
@@ -106,7 +112,8 @@ class Player < Node
 
   def unlock(*proposition, target)
     return 'What you want to unlock?' if target.empty?
-    item = findItemInRoom(target, parent)
+    item = findItemInRoom(target, self)
+    item = findItemInRoom(target, parent) if item.nil?
     if item
       if item.locked
         if haskey?
@@ -126,9 +133,16 @@ class Player < Node
 
   def eat(*proposition, target)
     return 'What you want to eat?' if target.empty?
-    item = findItemInRoom(target, parent)
-    if item.eatable
-      item.instance_eval(&item.on_eat) if item.on_eat
+    item = findItemInRoom(target, self)
+    item = findItemInRoom(target, parent) if item.nil?
+    if item
+      if item.eatable
+        item.instance_eval(&item.on_eat) if item.on_eat
+        item.deleteNode
+        "You have succesfully eaten #{target}."
+      else
+        "You cant eat #{target}! What would your mother say?"
+      end
     else
       "There is no such item as #{target}."
     end
@@ -146,7 +160,8 @@ class Player < Node
   end
 
   def help
-    "Welcome in GAME. You control your action by typing commands. Try to use simple sentences. Command allways start with verb, ends with target typically with noun. Here is list of availiable verbs: #{actions}."
+    "Welcome in GAME. You control your action by typing commands. Try to use simple sentences. Command allways start with verb, \
+    ends with target typically with noun. Here is list of availiable verbs: #{actions}."
   end
 
   def handle(action, *params)

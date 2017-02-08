@@ -26,6 +26,15 @@ class Node < OpenStruct
     true
   end
 
+  def deleteNode
+    return false if parent.nil?
+    children.each do |c|
+      c.parent = parent
+    end
+    parent.children -= [self] unless parent&.children.nil?
+    true
+  end
+
   def findNodeWithName(name, start)
     return start if start.name == name
     start.children.each do |c|
@@ -68,5 +77,19 @@ class Node < OpenStruct
         []
       end
     end
+  end
+
+  def description
+    descs = children.collect do |c|
+      ret = c.name
+      ret = c['short_description'] if c['short_description']
+      ret = nil if c.type == 'Player' || !c.movable || c.hidden
+      ret
+    end
+    descs.delete(nil)
+    if descs.empty?
+      return "#{self['description']}"
+    end
+    "#{self['description']}. Also you can find: #{descs.join(', ')}"
   end
 end

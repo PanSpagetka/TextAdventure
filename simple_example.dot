@@ -6,11 +6,16 @@ digraph
     "table" -> "fork";
     "kitchen" -> "chair";
     "chair" -> "paper";
-    "kitchen" -> "living room";
+    "kitchen" -> "empty room";
+    "empty room" -> "trail";
+    "empty room" -> "stairs";
+    "stairs" -> "cellar";
+    "cellar" -> "body";
+    "empty room" -> "Pepa";
     "kitchen" -> "door";
     "door" -> "bedroom";
     "bedroom" -> "bed";
     "bed" -> "doll";
     "doll" -> "knife";
-    "kitchen" -> "Pepa";
+    "bedroom" -> "altair";
   }

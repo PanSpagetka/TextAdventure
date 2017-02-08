@@ -8,6 +8,7 @@ class Room < Node
     options['openable'] = false if options['enterable'].nil?
     options['locked'] = false if options['enterable'].nil?
     options['eatable'] = false if options['enterable'].nil?
+    options['hidden'] = false if options['hidden'].nil?
     super
   end
 end

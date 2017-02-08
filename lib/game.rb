@@ -22,7 +22,7 @@ class Game
         end
       end
     rescue SystemExit => e
-      puts 'GAME OVER'
+      puts e.message
     end
   end
 
