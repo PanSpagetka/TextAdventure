@@ -4,7 +4,7 @@ require 'pry'
 require_all 'lib'
 
 world = World.new
-root = world.get_world
+world.get_world
 
 
 player = Player.new(nil, {:name => 'Pepa'})

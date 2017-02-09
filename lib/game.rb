@@ -45,7 +45,7 @@ private
     end
   end
 
-  def processGameCommand(cmd, params)
+  def processGameCommand(cmd, _params)
     case cmd
     when '-h'
       printHelp

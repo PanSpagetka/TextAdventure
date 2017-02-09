@@ -33,10 +33,11 @@ class World
              "type"=>"item",
              "description"=>"Mashed potatoes with onion and bacon. It seems to be hot. Hmmm yummy",
              "eatable"=>true,
-             "on_eat"=>Proc.new do
-                findNodeWithName('key', self).moveNode(parent.parent)
-                puts "Something got stuck between your teeth...its hard...better spit it out on floor! And it's key!"
-              end,
+             "on_eat"=>
+               Proc.new do
+                  findNodeWithName('key', self).moveNode(parent.parent)
+                  puts "Something got stuck between your teeth...its hard...better spit it out on floor! And it's key!"
+               end,
              "contains"=>
               [{"name"=>"key",
                 "type"=>"item",
@@ -72,11 +73,13 @@ class World
          {"name"=>"door",
           "type"=>"item",
           "description"=>"The door is closed. Arent they smiling? Probably leads to somewhere",
-          "on_open"=>Proc.new do
+          "on_open"=>
+            Proc.new do
               self.description = 'The Door is open. Leads to from kitchen to bedroom. Definitely smiling'
               puts "You are opening door! Such exciting. Very dangerous. Wow. This door leads to bedroom."
             end,
-          "on_close"=>Proc.new do
+          "on_close"=>
+            Proc.new do
               self.description = 'The Door is closed. Leads to from kitchen to bedroom'
               puts "You are closing door! Not really as exciting as opening."
             end,
@@ -90,10 +93,11 @@ class World
            [{"name"=>"bedroom",
              "type"=>"room",
              "description"=>"Bedroom, in the middle of room is very small bed. In corner is stone altair, it's old, very old",
-             "on_enter"=>Proc.new do
+             "on_enter"=>
+                Proc.new do
                  puts "You have that strange kind of feeling. You should have never go enter this room!"
                  self.on_enter = nil
-               end,
+                end,
              "contains"=>
              [{"name"=>"bed",
                "type"=>"item",
@@ -114,7 +118,8 @@ class World
                  "type"=>"item",
                  "movable"=>false,
                  "description"=>"Stone altair, with stone tentacles",
-                 'on_put'=>Proc.new do |item|
+                 'on_put'=>
+                 Proc.new do |item|
                    if item.name == 'body'
                      puts "You offered sacrifice to Old Gods and escape this nightmare. You are back in your world. But did you really escape?"
                      raise SystemExit.new 'You WIN!'

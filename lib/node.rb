@@ -3,7 +3,7 @@ require "ostruct"
 
 class Node < OpenStruct
 
-  def initialize(parent, options = {}, &block)
+  def initialize(parent, options = {})
     super()
     options['contains'] ||= {}
     options.each {|k,v| send("#{k}=", v) unless k == 'contains' }

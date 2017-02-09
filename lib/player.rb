@@ -17,7 +17,7 @@ class Player < Node
     @alive
   end
 
-  def take(*proposition, item)
+  def take(*_proposition, item)
     ret = false
     if item
       i = findNodeWithName(item, parent)
@@ -46,7 +46,7 @@ class Player < Node
   end
 
 
-  def look(*proposition, target)
+  def look(*_proposition, target)
     return 'Look at what?' if target.nil?
     target = parent.name if target == 'around'
     item = findItemInRoom(target, self)
@@ -74,7 +74,7 @@ class Player < Node
     end
   end
 
-  def open(*proposition, target)
+  def open(*_proposition, target)
     return 'What you want to open?' if target.empty?
     item = findItemInRoom(target, self)
     item = findItemInRoom(target, parent) if item.nil?
@@ -93,7 +93,7 @@ class Player < Node
     end
   end
 
-  def close(*proposition, target)
+  def close(*_proposition, target)
     return 'What you want to close?' if target.empty?
     item = findItemInRoom(target, self)
     item = findItemInRoom(target, parent) if item.nil?
@@ -110,7 +110,7 @@ class Player < Node
     end
   end
 
-  def unlock(*proposition, target)
+  def unlock(*_proposition, target)
     return 'What you want to unlock?' if target.empty?
     item = findItemInRoom(target, self)
     item = findItemInRoom(target, parent) if item.nil?
@@ -131,7 +131,7 @@ class Player < Node
     end
   end
 
-  def eat(*proposition, target)
+  def eat(*_proposition, target)
     return 'What you want to eat?' if target.empty?
     item = findItemInRoom(target, self)
     item = findItemInRoom(target, parent) if item.nil?
@@ -167,7 +167,7 @@ class Player < Node
   def handle(action, *params)
     begin
       self.send(action.to_sym, *params)
-    rescue ArgumentError => e
+    rescue ArgumentError
       ARGUMENT_ERRORS[action].each do |e|
         ret = e.call(params.count)
         return ret unless ret.nil?
